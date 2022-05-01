@@ -1,25 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {Route, Routes} from 'react-router-dom';
+import {Box, ChakraProvider, Container, Flex, Heading} from '@chakra-ui/react';
+import Stat from './pages/Stat';
+import Shortener from "./pages/Shortener";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+        <Box height='100vh'>
+            <Flex
+                alignItems='center'
+                justifyContent='center'
+                height='100px'
+                backgroundColor='purple.800'>
+                <Heading color='white'>URL Shortener</Heading>
+            </Flex>
+            <Container maxW='50%' minW='600px' mt='40px'>
+                <Routes>
+                    <Route path="/" element={<Shortener />} />
+                    <Route path="/stat" element={<Stat />} />
+                </Routes>
+            </Container>
+        </Box>
+    </ChakraProvider>
   );
 }
 
