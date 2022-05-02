@@ -1,27 +1,28 @@
 import {Button, Flex, Heading, Spinner, Text} from '@chakra-ui/react';
 import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
 import axios from "axios";
+import {Link} from 'react-router-dom';
 import {RepeatIcon} from '@chakra-ui/icons';
 
 const Stat = () => {
     const [count, setCount] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
 
     const fetchStat = async () => {
         try {
-            setError('');
             setIsLoading(true);
+            setError('');
             // const response = await axios.get('');
             setCount(100);
         } catch (e: any) {
             setError(e.message ?? 'No data received');
         } finally {
-            setIsLoading(false);
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 500)
         }
     };
-
 
     useEffect(() => {
         fetchStat();
@@ -31,7 +32,6 @@ const Stat = () => {
         return (
             <Flex alignItems='center' justifyContent='center' mt='50px' flexDirection='column'>
                 <Text color='darkred'>{error}</Text>
-
                 <Button
                     mt='30px'
                     colorScheme='purple'
@@ -47,42 +47,42 @@ const Stat = () => {
 
     return (
         <>
-            <Flex alignItems='center' justifyContent='center' mt='50px'>
-                {isLoading
-                    ?
-                    <Flex w='100%' alignItems='center' justifyContent='center' height='150px'>
-                        <Spinner thickness='5px'
-                                 speed='0.85s'
-                                 emptyColor='gray.200'
-                                 color='purple.500'
-                                 size='xl'/>
+            {isLoading
+                ?
+                <Flex w='100%' alignItems='center' justifyContent='center' height='150px' mt='50px'>
+                    <Spinner thickness='5px'
+                             speed='0.85s'
+                             emptyColor='gray.200'
+                             color='purple.500'
+                             size='xl'/>
+                </Flex>
+                :
+                <Flex alignItems='center'
+                      justifyContent='center'
+                      flexDirection='column'
+                      w='100%'
+                      mt='50px'>
+                    <Flex
+                        borderWidth='1px'
+                        p={5}
+                        borderRadius='lg'
+                        backgroundColor='purple.100'
+                        alignItems='center'
+                        justifyContent='center'
+                        flexDirection='column'
+                    >
+                        <Heading size='md'>Total URL Clicks</Heading>
+
+                        <Text fontSize='55px' fontWeight='bold'>{count}</Text>
                     </Flex>
-                    :
-                    <Flex alignItems='center'
-                          justifyContent='center'
-                          flexDirection='column'
-                          w='100%'>
-                        <Flex
-                            borderWidth='1px'
-                            p={5}
-                            borderRadius='lg'
-                            backgroundColor='purple.100'
 
-                            alignItems='center'
-                            justifyContent='center'
-                            flexDirection='column'
-                        >
-                            <Heading size='md'>Total URL Clicks</Heading>
+                    <Link to='/'>
+                        <Button size='sm' mt='30px' colorScheme='purple' variant='outline'>Create other shortened
+                            URL</Button>
+                    </Link>
+                </Flex>
+            }
 
-                            <Text fontSize='55px' fontWeight='bold'>{count}</Text>
-                        </Flex>
-
-                        <Link to='/'>
-                            <Button mt='30px' colorScheme='purple' variant='outline'>Create other shortened URL</Button>
-                        </Link>
-                    </Flex>
-                }
-            </Flex>
         </>
     );
 };

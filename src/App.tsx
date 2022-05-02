@@ -13,7 +13,7 @@ function App() {
                 justifyContent='center'
                 height='100px'
                 backgroundColor='purple.800'>
-                <Heading color='white'>URL Shortener</Heading>
+                <Heading color='white' letterSpacing={2}>URL Shortener</Heading>
             </Flex>
             <Container maxW='50%' minW='600px' mt='40px'>
                 <Routes>

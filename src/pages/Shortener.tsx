@@ -10,7 +10,7 @@ import {
     Text,
     useClipboard
 } from "@chakra-ui/react";
-import {CheckIcon, CopyIcon} from "@chakra-ui/icons";
+import {CheckIcon, CloseIcon, CopyIcon, PhoneIcon} from "@chakra-ui/icons";
 import {Link as RouterLink} from "react-router-dom";
 import axios from "axios";
 
@@ -24,25 +24,44 @@ const Shortener = () => {
     const {hasCopied: hasStatURLCopied, onCopy: onStatURLCopy} = useClipboard(statURL);
     const {hasCopied: hasShortURLCopied, onCopy: onShortURLCopy} = useClipboard(shortURL);
 
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const isValidHttpUrl = (string: string) => {
+        let res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+        return (res !== null)
+    };
 
     const shortenURL = async () => {
-        if (inputValue) {
+        if (isValidHttpUrl(inputValue)) {
             try {
-                setError('');
+                setIsLoading(true);
                 // const response = await axios.get('');
                 setLongURL(inputValue);
-                setShortURL('shorturl.at/acvL5');
-                setStatURL('shorturl.at/cdavL5/stat');
-                setInputValue('');
+                clearInput();
+                setShortURL('shorturl.at/pxCD2');
+                setStatURL('shorturl.at/pxCD2/stat');
             } catch (e: any) {
                 setError(e.message ?? 'No data received')
+            } finally {
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 500)
             }
+        } else {
+            setError('The URL is not valid, make sure the URL you tried to shorten is correct.');
+            setShortURL('');
+            setStatURL('');
         }
 
     };
+    const clearInput = () => {
+        setInputValue('');
+        setError('');
+    };
+
     const onChangeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
+        setError('');
         setInputValue(e.target.value);
     };
 
@@ -53,14 +72,24 @@ const Shortener = () => {
                     <Input
                         variant='flushed'
                         focusBorderColor='purple.500'
-                        pr='8.5rem'
+                        pr='155px'
                         placeholder='Enter the URL to be shortened'
                         value={inputValue}
                         onChange={onChangeInputValue}
                     />
-                    <InputRightElement width='8rem'>
+                    <InputRightElement width='155px' justifyContent='flex-end'>
+                        {inputValue && <IconButton
+                            backgroundColor='transparent'
+                            color='gray.500'
+                            aria-label='Delete link'
+                            size='xs'
+                            mr='10px'
+                            icon={<CloseIcon/>}
+                            onClick={clearInput}
+                        />}
+
                         <Button
-                            h='2.3rem'
+                            h='39px'
                             size='sm'
                             colorScheme='purple'
                             onClick={shortenURL}>
@@ -72,7 +101,15 @@ const Shortener = () => {
 
             {error && <Text mt='20px' color='darkred'>{error}</Text>}
 
-           {shortURL && statURL && <Box
+            {isLoading && <Flex w='100%' alignItems='center' justifyContent='center' height='150px'>
+                <Spinner thickness='5px'
+                         speed='0.85s'
+                         emptyColor='gray.200'
+                         color='purple.500'
+                         size='xl'/>
+            </Flex>}
+
+            {!isLoading && shortURL && <Box
                 w='100%'
                 m='30px auto'
                 p='20px'
@@ -112,11 +149,11 @@ const Shortener = () => {
                     <Text>Track&nbsp;
                         <RouterLink to="stat">
                             <Link whiteSpace='nowrap' overflow='hidden' textOverflow='ellipsis' maxWidth='480px'
-                                  color='purple.500'>the total of clicks</Link>
+                                  color='purple.500' fontWeight='bold'>the total of clicks</Link>
                         </RouterLink>
                         &nbsp;in real-time from your shortened URL.</Text>
                 </HStack>
-                <HStack spacing={2} mb={2}>
+                <HStack spacing={2} mb={2} alignItems='flex-start'>
                     <Text fontSize='xs'>Destination:</Text>
 
                     <Link fontSize='xs' color='gray' overflowWrap='anywhere' href={longURL}
