@@ -1,6 +1,5 @@
 import {Button, Flex, Heading, Spinner, Text} from '@chakra-ui/react';
 import React, {useEffect, useState} from 'react';
-import axios from "axios";
 import {Link} from 'react-router-dom';
 import {RepeatIcon} from '@chakra-ui/icons';
 
@@ -8,6 +7,10 @@ const Stat = () => {
     const [count, setCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        fetchStat();
+    }, []);
 
     const fetchStat = async () => {
         try {
@@ -23,10 +26,6 @@ const Stat = () => {
             }, 500)
         }
     };
-
-    useEffect(() => {
-        fetchStat();
-    }, []);
 
     if (error) {
         return (
@@ -72,17 +71,14 @@ const Stat = () => {
                         flexDirection='column'
                     >
                         <Heading size='md'>Total URL Clicks</Heading>
-
                         <Text fontSize='55px' fontWeight='bold'>{count}</Text>
                     </Flex>
-
                     <Link to='/'>
                         <Button size='sm' mt='30px' colorScheme='purple' variant='outline'>Create other shortened
                             URL</Button>
                     </Link>
                 </Flex>
             }
-
         </>
     );
 };

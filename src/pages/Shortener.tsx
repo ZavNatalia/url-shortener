@@ -10,9 +10,10 @@ import {
     Text,
     useClipboard
 } from "@chakra-ui/react";
-import {CheckIcon, CloseIcon, CopyIcon, PhoneIcon} from "@chakra-ui/icons";
-import {Link as RouterLink} from "react-router-dom";
-import axios from "axios";
+import {CheckIcon, CloseIcon, CopyIcon} from "@chakra-ui/icons";
+import {Link as ReachLink} from "react-router-dom";
+
+let re = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g;
 
 const Shortener = () => {
     const [inputValue, setInputValue] = useState('');
@@ -28,8 +29,8 @@ const Shortener = () => {
     const [error, setError] = useState('');
 
     const isValidHttpUrl = (string: string) => {
-        let res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-        return (res !== null)
+        let res = string.match(re);
+        return (res !== null);
     };
 
     const shortenURL = async () => {
@@ -87,7 +88,6 @@ const Shortener = () => {
                             icon={<CloseIcon/>}
                             onClick={clearInput}
                         />}
-
                         <Button
                             h='39px'
                             size='sm'
@@ -137,7 +137,6 @@ const Shortener = () => {
                     >
                         {statURL}
                     </Link>
-
                     <IconButton
                         aria-label='Copy link'
                         size='sm'
@@ -146,16 +145,12 @@ const Shortener = () => {
                     />
                 </HStack>
                 <HStack spacing={2} mb={6}>
-                    <Text>Track&nbsp;
-                        <RouterLink to="stat">
-                            <Link whiteSpace='nowrap' overflow='hidden' textOverflow='ellipsis' maxWidth='480px'
-                                  color='purple.500' fontWeight='bold'>the total of clicks</Link>
-                        </RouterLink>
-                        &nbsp;in real-time from your shortened URL.</Text>
+                    <Flex>Track&nbsp;
+                        <Link as={ReachLink} to='stat' color='purple.500' fontWeight='bold'>the total of clicks</Link>
+                        &nbsp;in real-time from your shortened URL.</Flex>
                 </HStack>
                 <HStack spacing={2} mb={2} alignItems='flex-start'>
                     <Text fontSize='xs'>Destination:</Text>
-
                     <Link fontSize='xs' color='gray' overflowWrap='anywhere' href={longURL}
                           isExternal>{longURL}</Link>
                 </HStack>
