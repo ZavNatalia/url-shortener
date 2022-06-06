@@ -1,12 +1,15 @@
 import {Button, Flex, Heading, Spinner, Text} from '@chakra-ui/react';
 import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {RepeatIcon} from '@chakra-ui/icons';
+import axios from "axios";
+import {mainUrl} from "../utils/main-url";
 
-const Stat = () => {
+const Statistics = () => {
     const [count, setCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    let {id} = useParams();
 
     useEffect(() => {
         fetchStat();
@@ -16,8 +19,8 @@ const Stat = () => {
         try {
             setIsLoading(true);
             setError('');
-            // const response = await axios.get('');
-            setCount(100);
+            const response = await axios.get(`${mainUrl}/stat/${id}`);
+            setCount(response.data);
         } catch (e: any) {
             setError(e.message ?? 'No data received');
         } finally {
@@ -29,17 +32,19 @@ const Stat = () => {
 
     if (error) {
         return (
-            <Flex alignItems='center' justifyContent='center' mt='50px' flexDirection='column'>
+            <Flex alignItems='center' justifyContent='center' mt='80px' flexDirection='column'>
                 <Text color='darkred'>{error}</Text>
                 <Button
                     mt='30px'
                     colorScheme='purple'
-                    variant='ghost'
                     leftIcon={<RepeatIcon/>}
                     onClick={fetchStat}
                 >
                     Retry
                 </Button>
+                <Link to='/'>
+                    <Button size='sm' mt='30px' colorScheme='purple' variant='ghost'>Create shortened URL</Button>
+                </Link>
             </Flex>
         )
     }
@@ -64,17 +69,18 @@ const Stat = () => {
                     <Flex
                         borderWidth='1px'
                         p={5}
+                        mb={8}
                         borderRadius='lg'
                         backgroundColor='purple.100'
                         alignItems='center'
                         justifyContent='center'
                         flexDirection='column'
                     >
-                        <Heading size='md'>Total URL Clicks</Heading>
+                        <Heading size='md' mb={2}>Total URL Clicks</Heading>
                         <Text fontSize='55px' fontWeight='bold'>{count}</Text>
                     </Flex>
                     <Link to='/'>
-                        <Button size='sm' mt='30px' colorScheme='purple' variant='outline'>Create other shortened
+                        <Button size='sm' colorScheme='purple' variant='outline'>Create other shortened
                             URL</Button>
                     </Link>
                 </Flex>
@@ -83,4 +89,4 @@ const Stat = () => {
     );
 };
 
-export default Stat;
+export default Statistics;

@@ -1,58 +1,68 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, FC, useState} from 'react';
 import {
     Box,
-    Button, Flex,
-    HStack, IconButton,
+    Button,
+    Flex,
+    HStack,
+    IconButton,
     Input,
     InputGroup,
     InputRightElement,
-    Link, Spinner,
+    Link,
+    Spinner,
     Text,
     useClipboard
 } from "@chakra-ui/react";
 import {CheckIcon, CloseIcon, CopyIcon} from "@chakra-ui/icons";
 import {Link as ReachLink} from "react-router-dom";
+import axios from "axios";
+import {emailValidator} from "../utils/email-validator";
+import {mainUrl} from "../utils/main-url";
 
-let re = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)/g;
-
-const Shortener = () => {
+const Shortener: FC = () => {
     const [inputValue, setInputValue] = useState('');
-    const [longURL, setLongURL] = useState('');
+    const [originalURL, setOriginalURL] = useState('');
 
-    const [statURL, setStatURL] = useState('');
+    const [linkID, setLinkID] = useState(null);
+    const [fullURL, setFullURL] = useState('');
     const [shortURL, setShortURL] = useState('');
 
-    const {hasCopied: hasStatURLCopied, onCopy: onStatURLCopy} = useClipboard(statURL);
+    const {hasCopied: hasStatURLCopied, onCopy: onStatURLCopy} = useClipboard(fullURL);
     const {hasCopied: hasShortURLCopied, onCopy: onShortURLCopy} = useClipboard(shortURL);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const isValidHttpUrl = (string: string) => {
-        let res = string.match(re);
+    const isValidHttpURL = (string: string) => {
+        let res = string.match(emailValidator);
         return (res !== null);
     };
 
     const shortenURL = async () => {
-        if (isValidHttpUrl(inputValue)) {
+        if (isValidHttpURL(inputValue)) {
             try {
                 setIsLoading(true);
-                // const response = await axios.get('');
-                setLongURL(inputValue);
+                const {data} = await axios({
+                    method: 'post',
+                    url: `${mainUrl}/linkUrl`,
+                    data: {
+                        full_url: inputValue
+                    }
+                });
                 clearInput();
-                setShortURL('shorturl.at/pxCD2');
-                setStatURL('shorturl.at/pxCD2/stat');
+                setLinkID(data.id);
+                setOriginalURL(inputValue);
+                setFullURL(data.full_url);
+                setShortURL(data.short_url);
             } catch (e: any) {
                 setError(e.message ?? 'No data received')
             } finally {
-                setTimeout(() => {
-                    setIsLoading(false)
-                }, 500)
+                setIsLoading(false)
             }
         } else {
             setError('The URL is not valid, make sure the URL you tried to shorten is correct.');
             setShortURL('');
-            setStatURL('');
+            setFullURL('');
         }
 
     };
@@ -116,9 +126,9 @@ const Shortener = () => {
                 borderWidth='1px'
                 borderRadius='md'
                 overflow='hidden'>
-                <HStack spacing={2} mb={2}>
+                <HStack spacing={2} mb={3}>
                     <Text width='50px'>Short:</Text>
-                    <Link color='coral'>{shortURL}</Link>
+                    <Text color='coral'>{shortURL}</Text>
                     <IconButton
                         aria-label='Copy link'
                         size='sm'
@@ -126,17 +136,16 @@ const Shortener = () => {
                         onClick={onShortURLCopy}
                     />
                 </HStack>
-                <HStack spacing={2} mb={2}>
+                <HStack spacing={2} mb={3}>
                     <Text width='50px'>Stat:</Text>
-                    <Link whiteSpace='nowrap'
+                    <Text whiteSpace='nowrap'
                           overflow='hidden'
                           textOverflow='ellipsis'
                           maxWidth='480px'
                           color='coral'
-                          isExternal
                     >
-                        {statURL}
-                    </Link>
+                        {fullURL}
+                    </Text>
                     <IconButton
                         aria-label='Copy link'
                         size='sm'
@@ -146,13 +155,14 @@ const Shortener = () => {
                 </HStack>
                 <HStack spacing={2} mb={6}>
                     <Flex>Track&nbsp;
-                        <Link as={ReachLink} to='stat' color='purple.500' fontWeight='bold'>the total of clicks</Link>
+                        <Link as={ReachLink} to={`stat/${linkID}`} color='purple.500' fontWeight='bold'>the total of
+                            clicks</Link>
                         &nbsp;in real-time from your shortened URL.</Flex>
                 </HStack>
                 <HStack spacing={2} mb={2} alignItems='flex-start'>
-                    <Text fontSize='xs'>Destination:</Text>
-                    <Link fontSize='xs' color='gray' overflowWrap='anywhere' href={longURL}
-                          isExternal>{longURL}</Link>
+                    <Text fontSize='sm'>Destination:</Text>
+                    <Link fontSize='sm' color='gray' overflowWrap='anywhere' href={originalURL}
+                          isExternal>{originalURL}</Link>
                 </HStack>
             </Box>}
         </>
