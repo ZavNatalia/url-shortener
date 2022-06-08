@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {RepeatIcon} from '@chakra-ui/icons';
 import axios from "axios";
-import {mainUrl} from "../utils/main-url";
+import {statUrl} from "../constants/urls";
 
 const Statistics = () => {
     const [count, setCount] = useState(0);
@@ -19,14 +19,12 @@ const Statistics = () => {
         try {
             setIsLoading(true);
             setError('');
-            const response = await axios.get(`${mainUrl}/stat/${id}`);
+            const response = await axios.get(`${statUrl}/${id}`);
             setCount(response.data);
         } catch (e: any) {
             setError(e.message ?? 'No data received');
         } finally {
-            setTimeout(() => {
-                setIsLoading(false)
-            }, 500)
+            setIsLoading(false);
         }
     };
 

@@ -15,7 +15,7 @@ function App() {
                     backgroundColor='purple.800'>
                     <Heading color='white' letterSpacing={2}>URL Shortener</Heading>
                 </Flex>
-                <Container maxW='50%' minW='600px' mt='40px'>
+                <Container maxW='50%' minW='600px' mt='40px' p='20px'>
                     <Routes>
                         <Route path="/" element={<Shortener/>}/>
                         <Route path="/stat/:id" element={<Statistics/>}/>
