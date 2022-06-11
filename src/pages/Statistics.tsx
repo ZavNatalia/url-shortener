@@ -31,7 +31,7 @@ const Statistics = () => {
     if (error) {
         return (
             <Flex alignItems='center' justifyContent='center' mt='80px' flexDirection='column'>
-                <Text color='darkred'>{error}</Text>
+                {error && <Text color='darkred'>{error}</Text>}
                 <Button
                     mt='30px'
                     colorScheme='purple'
